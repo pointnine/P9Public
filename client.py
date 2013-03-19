@@ -37,7 +37,7 @@ class CircleClient:
         return self.run_json(workflow, action, **kwargs)['data']
 
 def demo():
-    cc = CircleClient(host='circle.p9ft.com', fund='demo', username='guest', password='demodemodemo')
+    cc = CircleClient(host='circle.p9ft.com', fund='areski', username='rpcclient', password='rpcdemorpcqph')
     #cc = CircleClient(host='localhost', fund='test', username='guest', password='demodemodemo');cc.PROTOCOL = 'http'
 
     response = cc.run('PyClientCalendarWorkflow', 'get_calendar')
@@ -94,5 +94,5 @@ def demo():
     # gives whole position report
 
 if __name__ == '__main__':
-    #demo() # uncomment this to run demo
+    demo() # uncomment this to run demo
     pass
