@@ -119,7 +119,7 @@ def demo():
     print cc.run_raw('PyClientDataModelWorkflow', 'get_model_description', model_name='PositionReportModel')
 
     print cc.run('UIPositionReportQueryWorkflow', 'get_standard',
-        AsOfDate='2013-03-13', KnowledgeDate='2013-03-13', IncludeNonTrading='N', IncludeTrading='Y', page=1, start=0, limit=1000)
+        AsOfDate='2013-03-13', KnowledgeDate='2013-03-13', IncludeNonTrading='N', IncludeTrading='Y')
     # gives whole position report
 
 if __name__ == '__main__':
