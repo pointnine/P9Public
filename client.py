@@ -1,3 +1,32 @@
+# Circle API
+# Copyright (c) 2012-2020, Point Nine Limited
+# All rights reserved.
+#
+# info@p9ft.com
+# http://www.p9ft.com/terms.html
+#
+# By obtaining, using, and/or copying this software and/or its
+# associated documentation, you agree that you have read, understood,
+# and will comply with the following terms and conditions:
+#
+# Permission to use, copy, modify, and distribute this software and
+# its associated documentation for any purpose and without fee is
+# hereby granted, provided that the above copyright notice appears in
+# all copies, and that both that copyright notice and this permission
+# notice appear in supporting documentation, and that the name of
+# Point Nine Limited or the author not be used in advertising or publicity
+# pertaining to distribution of the software without specific, written
+# prior permission.
+#
+# POINT NINE LIMITED AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
+# TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANT-
+# ABILITY AND FITNESS.  IN NO EVENT SHALL POINT NINE LIMITED OR THE AUTHOR
+# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+# ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+# OF THIS SOFTWARE.
+# --------------------------------------------------------------------
 import urllib2
 import json
 
@@ -96,3 +125,4 @@ def demo():
 if __name__ == '__main__':
     demo() # uncomment this to run demo
     pass
+
