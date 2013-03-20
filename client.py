@@ -31,7 +31,7 @@ import urllib2
 import json
 
 
-class CircleClient:
+class CircleClient(object):
     """ Allows accessing circle workflows from Python
     """
     PROTOCOL = 'https'
