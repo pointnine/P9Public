@@ -27,8 +27,15 @@
 # ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 # --------------------------------------------------------------------
-import urllib2
 import json
+from sys import version_info
+
+PYTHON_3 = version_info >= (3, 3)
+if PYTHON_3:
+    from urllib import request as urllib2
+else:
+    import urllib2
+
 
 
 class CircleClient(object):
@@ -52,8 +59,11 @@ class CircleClient(object):
         URL = "%s://%s/%s/do/%s/%s/" % (
             self.PROTOCOL, self.HOST, self.FUND, workflow, action)
         data = json.dumps(kwargs)
-        request = urllib2.Request(URL, data=data, headers=self.HEADERS)
-        return self.opener.open(request).read()
+        request = urllib2.Request(URL,
+                                  data=data.encode('ascii') if PYTHON_3 else data,
+                                  headers=self.HEADERS)
+        result = self.opener.open(request).read()
+        return result.decode('ascii') if PYTHON_3 else result
 
     def run_json(self, workflow, action, **kwargs):
         """ runs a request, returns parsed response, in case it's json
@@ -74,48 +84,48 @@ def demo():
 #        username='guest', password='demodemodemo');cc.PROTOCOL = 'http'
 
     response = cc.run('PyClientCalendarWorkflow', 'get_calendar')
-    print response
+    print(response)
     #dict of properties
 
-    print cc.run('PyClientCalendarWorkflow', 'get_year_start',
-                 date='2012-04-07')
+    print(cc.run('PyClientCalendarWorkflow', 'get_year_start',
+                 date='2012-04-07'))
     #2012-01-02
-    print cc.run('PyClientCalendarWorkflow', 'get_month_start',
-                 date='2012-04-07')
+    print(cc.run('PyClientCalendarWorkflow', 'get_month_start',
+                 date='2012-04-07'))
     #2012-04-02
-    print cc.run('PyClientCalendarWorkflow', 'get_business_day',
-                 date='2012-04-07', next=True)
+    print(cc.run('PyClientCalendarWorkflow', 'get_business_day',
+                 date='2012-04-07', next=True))
     #2012-04-10
-    print cc.run('PyClientCalendarWorkflow', 'get_business_day',
-                 date='2012-04-07', next=False)
+    print(cc.run('PyClientCalendarWorkflow', 'get_business_day',
+                 date='2012-04-07', next=False))
     #2012-04-05
 
-    print cc.run('PyClientCalendarWorkflow', 'is_holiday', date='2012-04-07')
+    print(cc.run('PyClientCalendarWorkflow', 'is_holiday', date='2012-04-07'))
     #True
-    print cc.run('PyClientCalendarWorkflow', 'is_holiday', date='2012-04-05')
+    print(cc.run('PyClientCalendarWorkflow', 'is_holiday', date='2012-04-05'))
     #False
 
-    print cc.run('PyClientCalendarWorkflow', 'offset', date='2012-04-07',
-                 count=10)
+    print(cc.run('PyClientCalendarWorkflow', 'offset', date='2012-04-07',
+                 count=10))
     #2012-04-23
 
-    print cc.run('PyClientCalendarWorkflow', 'offset',
-                 date='2012-04-07', count=-10)
+    print(cc.run('PyClientCalendarWorkflow', 'offset',
+                 date='2012-04-07', count=-10))
     #2012-03-23
 
-    print cc.run('PyClientCalendarWorkflow', 'working_days_diff',
-                 date1='2012-04-07', date2='2012-04-12')
+    print(cc.run('PyClientCalendarWorkflow', 'working_days_diff',
+                 date1='2012-04-07', date2='2012-04-12'))
     #3
 
-    print cc.run('PyClientCalendarWorkflow', 'working_days',
-                 date1='2012-04-07', date2='2012-04-15')
+    print(cc.run('PyClientCalendarWorkflow', 'working_days',
+                 date1='2012-04-07', date2='2012-04-15'))
     #[u'2012-04-10', u'2012-04-11', u'2012-04-12', u'2012-04-13']
 
     response = cc.run_json('UISettingsWorkflow', 'get_settings')
     data = response['data']
     for key in data.keys():
         if 'CALENDAR' in key:
-            print key, '=', data[key]
+            print('%s = %s' % (key, data[key]))
     #result:
     #CALENDAR_PREVIOUS_DAY = 2013-03-13
     #CALENDAR_YEAR_END = 2013-12-31
@@ -126,14 +136,14 @@ def demo():
     #CALENDAR_BUSINESS_DAY = 2013-03-14
     #CALENDAR_YEAR_START = 2013-01-02
 
-    print cc.run_json('PyClientDataModelWorkflow', 'get_model_description',
-                      model_name='UnknownModel')
-    print cc.run_raw('PyClientDataModelWorkflow', 'get_model_description',
-                     model_name='PositionReportModel')
+    print(cc.run_json('PyClientDataModelWorkflow', 'get_model_description',
+                      model_name='UnknownModel'))
+    print(cc.run_raw('PyClientDataModelWorkflow', 'get_model_description',
+                     model_name='PositionReportModel'))
 
-    print cc.run('UIPositionReportQueryWorkflow', 'get_standard',
+    print(cc.run('UIPositionReportQueryWorkflow', 'get_standard',
                  AsOfDate='2013-03-13', KnowledgeDate='2013-03-13',
-                 IncludeNonTrading='N', IncludeTrading='Y')
+                 IncludeNonTrading='N', IncludeTrading='Y'))
     # gives whole position report
 
 if __name__ == '__main__':
