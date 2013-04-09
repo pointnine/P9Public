@@ -36,7 +36,6 @@ if PYTHON_3:
 else:
     import urllib2
 
-#test auto push to github
 
 class CircleClient(object):
     """ Allows accessing circle workflows from Python
