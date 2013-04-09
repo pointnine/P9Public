@@ -1,0 +1,8 @@
+*.pyc
+*.pyo
+*.swf
+*.swp
+*~
+localsettings.py
+*.bak*
+*.DS_Store

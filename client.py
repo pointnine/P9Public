@@ -30,7 +30,7 @@
 import json
 from sys import version_info
 
-PYTHON_3 = version_info >= (3, 3)
+PYTHON_3 = version_info >= (3, 0)
 if PYTHON_3:
     from urllib import request as urllib2
 else:
