@@ -75,6 +75,16 @@ class CircleClient(object):
         """
         return self.run_json(workflow, action, **kwargs)['data']
 
+    def parse_response(self, response):
+        """ reads the response assuming it's ModelRowResult
+            or raises an exception if request failed
+        """
+        if response["status"] == "ok":
+            return response["data"][0]['rows']
+        messages = [error["message"] for error in response["errors"]]
+        raise Exception("Circle reports error: " + "\n".join(messages))
+
+
 
 def demo():
     cc = CircleClient(host='circle.p9ft.com', fund='areski',
