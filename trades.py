@@ -91,5 +91,12 @@ def demo():
     demo_edit(cc)
     demo_edit2(cc)
 
+def demo_model():
+    cc = CircleClient(host='circle.p9ft.com', fund='areski',
+                      username='rpcclient', password='rpcdemorpcqph')
+
+    print(cc.run_raw('PyClientDataModelWorkflow', 'get_model_description',
+                     model_name='TransactionActivityModel'))
+
 if __name__ == '__main__':
-    demo()
+    demo_model()
