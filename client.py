@@ -93,7 +93,7 @@ def demo():
 #        username='guest', password='demodemodemo');cc.PROTOCOL = 'http'
 
     response = cc.run('PyClientCalendarWorkflow', 'get_calendar')
-    print(response)
+    print response
     #dict of properties
 
     print(cc.run('PyClientCalendarWorkflow', 'get_year_start',
@@ -155,6 +155,19 @@ def demo():
                  IncludeNonTrading='N', IncludeTrading='Y'))
     # gives whole position report
 
+def test_trade_upload():
+    """ Allows uploading trades to the Circle system
+    """
+    import sys
+    if len(sys.argv) < 2:
+        print "Usage: client.py path_to_file"
+    payload = open(sys.argv[1], 'r').read()
+    cc = CircleClient(host='circle.p9ft.com', fund='areski',
+        username='rpcclient', password='rpcdemorpcqph')
+    response = cc.run_json('UIGridWorkflow', 'process', payload = payload, notify = True)
+    print response
+
 if __name__ == '__main__':
-    demo()  # uncomment this to run demo
+    #demo()  # uncomment this to run demo
+    test_trade_upload()
     pass
