@@ -93,7 +93,7 @@ def demo():
 #        username='guest', password='demodemodemo');cc.PROTOCOL = 'http'
 
     response = cc.run('PyClientCalendarWorkflow', 'get_calendar')
-    print response
+    print(response)
     #dict of properties
 
     print(cc.run('PyClientCalendarWorkflow', 'get_year_start',
@@ -160,12 +160,13 @@ def test_trade_upload():
     """
     import sys
     if len(sys.argv) < 2:
-        print "Usage: client.py path_to_file"
+        print("Usage: client.py path_to_file")
+        return
     payload = open(sys.argv[1], 'r').read()
     cc = CircleClient(host='circle.p9ft.com', fund='areski',
         username='rpcclient', password='rpcdemorpcqph')
     response = cc.run_json('UIGridWorkflow', 'process', payload = payload, notify = True)
-    print response
+    print(response)
 
 if __name__ == '__main__':
     #demo()  # uncomment this to run demo
