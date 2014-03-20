@@ -168,7 +168,35 @@ def test_trade_upload():
     response = cc.run_json('UIGridWorkflow', 'process', payload = payload, notify = True)
     print(response)
 
+def test_positions_upload():
+    """ Allows uploading trades to the Circle system
+    """
+    import sys
+    # if len(sys.argv) < 2:
+    #     print("Usage: client.py path_to_file")
+    #     return
+    # payload = open(sys.argv[1], 'r').read()
+    payload = """{
+    "date": "2014-03-07",
+    "trades": {
+            "E10.2": {
+            "FX": 0.7207207207207208,
+            "Forward": 3126.46,
+            "Funding": 73.3530048663213,
+            "PV": 0.0,
+            "PnL": 136574.11550486615,
+            "Size": 90.0,
+            "Spot": 3126.46
+            }
+    }}"""
+
+    cc = CircleClient(host='circle.p9ft.com', fund='areski',
+        username='rpcclient', password='rpcdemorpcqph')
+    response = cc.run_json('UIGridWorkflow', 'load_positions', payload = payload, notify = True)
+    print(response)
+
+
 if __name__ == '__main__':
     #demo()  # uncomment this to run demo
-    test_trade_upload()
+    test_positions_upload()
     pass
