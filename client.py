@@ -169,7 +169,7 @@ def test_trade_upload():
     print(response)
 
 def test_positions_upload():
-    """ Allows uploading trades to the Circle system
+    """ Allows uploading positions to the Circle system
     """
     import sys
     # if len(sys.argv) < 2:
