@@ -37,8 +37,9 @@ else:
     import urllib2
 
 
-class CircleClient(object):
-    """ Allows accessing circle workflows from Python
+class RPCClient(object):
+    """ Allows accessing RPC workflows from Python.
+        It is a base class for CircleClient and QueueClient.
     """
     PROTOCOL = 'https'
     REALM = 'Platforma Login'
@@ -52,15 +53,17 @@ class CircleClient(object):
         handler = urllib2.HTTPBasicAuthHandler(password_mgr=pwd_mgr)
         self.opener = urllib2.build_opener(handler)
 
+    def compose_url(self, workflow, action):
+        raise NotImplementedError
+
     def run_raw(self, workflow, action, **kwargs):
         """ runs a request, returns a response
         """
-        URL = "%s://%s/%s/do/%s/%s/" % (
-            self.PROTOCOL, self.HOST, self.FUND, workflow, action)
+        URL = self.compose_url(workflow, action)
         data = json.dumps(kwargs)
         request = urllib2.Request(URL,
-                                  data=data.encode('ascii') if PYTHON_3 else data,
-                                  headers=self.HEADERS)
+            data=data.encode('ascii') if PYTHON_3 else data,
+            headers=self.HEADERS)
         result = self.opener.open(request).read()
         return result.decode('ascii') if PYTHON_3 else result
 
@@ -75,6 +78,9 @@ class CircleClient(object):
         """
         return self.run_json(workflow, action, **kwargs)['data']
 
+    def compose_error_message(self, messages):
+        raise NotImplementedError
+
     def parse_response(self, response):
         """ reads the response assuming it's ModelRowResult
             or raises an exception if request failed
@@ -82,7 +88,32 @@ class CircleClient(object):
         if response["status"] == "ok":
             return response["data"][0]['rows']
         messages = [error["message"] for error in response["errors"]]
-        raise Exception("Circle reports error: " + "\n".join(messages))
+        raise Exception(self.compose_error_message(messages))
+
+
+class CircleClient(RPCClient):
+    """ Allows accessing Circle workflows from Python
+    """
+    def compose_url(self, workflow, action):
+        url = "%s://%s/%s/do/%s/%s/" % (
+            self.PROTOCOL, self.HOST, self.FUND, workflow, action)
+        return url
+
+    def compose_error_message(self, messages):
+        return "Circle reports error: " + "\n".join(messages)
+
+
+class QueueClient(RPCClient):
+    """ Allows accessing Queue workflows from Python
+    """
+    def compose_url(self, workflow, action):
+        url = "%s://%s/%s/_%s/%s/" % (
+            self.PROTOCOL, self.HOST, self.FUND, workflow, action)
+        return url
+
+    def compose_error_message(self, messages):
+        return "Queue reports error: " + "\n".join(messages)
+
 
 
 
@@ -168,6 +199,20 @@ def test_trade_upload():
     response = cc.run_json('UIGridWorkflow', 'process', payload = payload, notify = True)
     print(response)
 
+def test_trade_upload_to_queue():
+    """ Allows uploading trades to the Queue
+    """
+    import sys
+    if len(sys.argv) < 2:
+        print("Usage: client.py path_to_file")
+        return
+    payload = open(sys.argv[1], 'r').read()
+    cc = QueueClient(host='circle.p9ft.com', fund='apps',
+        username='rpcclient', password='rpcdemorpcqph')
+
+    response = cc.run_json('areski', 'load_trades', payload = payload)
+    print(response)
+
 def test_positions_upload():
     """ Allows uploading positions to the Circle system
     """
@@ -195,8 +240,39 @@ def test_positions_upload():
     response = cc.run_json('UIGridWorkflow', 'load_positions', payload = payload, notify = True)
     print(response)
 
+def test_positions_upload_to_queue():
+    """ Allows uploading positions to the Queue
+    """
+    import sys
+    # if len(sys.argv) < 2:
+    #     print("Usage: client.py path_to_file")
+    #     return
+    # payload = open(sys.argv[1], 'r').read()
+    payload = """{
+    "date": "2014-03-07",
+    "trades": {
+            "E10.2": {
+            "FX": 0.7207207207207208,
+            "Forward": 3126.46,
+            "Funding": 73.3530048663213,
+            "PV": 0.0,
+            "PnL": 136574.11550486615,
+            "Size": 90.0,
+            "Spot": 3126.46
+            }
+    }}"""
+
+    cc = QueueClient(host='circle.p9ft.com', fund='apps',
+        username='rpcclient', password='rpcdemorpcqph')
+
+    response = cc.run_json('areski', 'load_positions', payload = payload)
+    print(response)
+
+
 
 if __name__ == '__main__':
     #demo()  # uncomment this to run demo
     test_positions_upload()
+    #test_trade_upload_to_queue()
+    #test_positions_upload_to_queue()
     pass
