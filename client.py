@@ -38,20 +38,14 @@ else:
 
 
 class RPCClient(object):
-    """ Allows accessing RPC workflows from Python.
-        It is a base class for CircleClient and QueueClient.
+    """ Allows accessing rpc workflows from Python
     """
     PROTOCOL = 'https'
     REALM = 'Platforma Login'
     HEADERS = {'Content-Type': 'application/json'}
 
-    def __init__(self, host, fund, username, password):
-        self.HOST = host
-        self.FUND = fund
-        pwd_mgr = urllib2.HTTPPasswordMgr()
-        pwd_mgr.add_password(self.REALM, self.HOST, username, password)
-        handler = urllib2.HTTPBasicAuthHandler(password_mgr=pwd_mgr)
-        self.opener = urllib2.build_opener(handler)
+    def __init__(self):
+        self.opener = None
 
     def compose_url(self, workflow, action):
         raise NotImplementedError
@@ -92,8 +86,16 @@ class RPCClient(object):
 
 
 class CircleClient(RPCClient):
-    """ Allows accessing Circle workflows from Python
+    """ Allows accessing circle workflows from Python
     """
+    def __init__(self, host, fund, username, password):
+        self.HOST = host
+        self.FUND = fund
+        pwd_mgr = urllib2.HTTPPasswordMgr()
+        pwd_mgr.add_password(self.REALM, self.HOST, username, password)
+        handler = urllib2.HTTPBasicAuthHandler(password_mgr=pwd_mgr)
+        self.opener = urllib2.build_opener(handler)
+
     def compose_url(self, workflow, action):
         url = "%s://%s/%s/do/%s/%s/" % (
             self.PROTOCOL, self.HOST, self.FUND, workflow, action)
@@ -104,8 +106,20 @@ class CircleClient(RPCClient):
 
 
 class QueueClient(RPCClient):
-    """ Allows accessing Queue workflows from Python
+    """ Allows accessing queue workflows from Python
     """
+    def __init__(self, host, fund, api_key):
+        self.HOST = host
+        self.FUND = fund
+        self.API_KEY = api_key
+        self.opener = urllib2.build_opener()
+
+    def run_raw(self, workflow, action, **kwargs):
+        """ runs a request, returns a response
+        """
+        kwargs["__api_key"] = self.API_KEY
+        return super(QueueClient, self).run_raw(workflow, action, **kwargs)
+
     def compose_url(self, workflow, action):
         url = "%s://%s/%s/_%s/%s/" % (
             self.PROTOCOL, self.HOST, self.FUND, workflow, action)
@@ -207,8 +221,9 @@ def test_trade_upload_to_queue():
         print("Usage: client.py path_to_file")
         return
     payload = open(sys.argv[1], 'r').read()
-    cc = QueueClient(host='circle.p9ft.com', fund='apps',
-        username='rpcclient', password='rpcdemorpcqph')
+
+    #replace sample api_key below with real one
+    cc = QueueClient(host='circle.p9ft.com', fund='apps', api_key='11111111-1111-1111-1111-111111111111')
 
     response = cc.run_json('areski', 'load_trades', payload = payload)
     print(response)
@@ -262,8 +277,8 @@ def test_positions_upload_to_queue():
             }
     }}"""
 
-    cc = QueueClient(host='circle.p9ft.com', fund='apps',
-        username='rpcclient', password='rpcdemorpcqph')
+    #replace sample api_key below with real one
+    cc = QueueClient(host='circle.p9ft.com', fund='apps', api_key='11111111-1111-1111-1111-111111111111')
 
     response = cc.run_json('areski', 'load_positions', payload = payload)
     print(response)
@@ -272,7 +287,7 @@ def test_positions_upload_to_queue():
 
 if __name__ == '__main__':
     #demo()  # uncomment this to run demo
-    test_positions_upload()
+    #test_positions_upload()
     #test_trade_upload_to_queue()
-    #test_positions_upload_to_queue()
+    test_positions_upload_to_queue()
     pass
