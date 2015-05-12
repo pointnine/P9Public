@@ -108,9 +108,9 @@ class CircleClient(RPCClient):
 class QueueClient(RPCClient):
     """ Allows accessing queue workflows from Python
     """
-    def __init__(self, host, fund, api_key):
+    def __init__(self, host, instance, api_key):
         self.HOST = host
-        self.FUND = fund
+        self.INSTANCE = instance
         self.API_KEY = api_key
         self.opener = urllib2.build_opener()
 
@@ -122,7 +122,7 @@ class QueueClient(RPCClient):
 
     def compose_url(self, workflow, action):
         url = "%s://%s/%s/_%s/%s/" % (
-            self.PROTOCOL, self.HOST, self.FUND, workflow, action)
+            self.PROTOCOL, self.HOST, self.INSTANCE, workflow, action)
         return url
 
     def compose_error_message(self, messages):
@@ -223,7 +223,7 @@ def test_trade_upload_to_queue():
     payload = open(sys.argv[1], 'r').read()
 
     #replace sample api_key below with real one
-    cc = QueueClient(host='circle.p9ft.com', fund='apps', api_key='11111111-1111-1111-1111-111111111111')
+    cc = QueueClient(host='circle.p9ft.com', instance='apps', api_key='11111111-1111-1111-1111-111111111111')
 
     response = cc.run_json('areski', 'load_trades', payload = payload)
     print(response)
@@ -278,7 +278,7 @@ def test_positions_upload_to_queue():
     }}"""
 
     #replace sample api_key below with real one
-    cc = QueueClient(host='circle.p9ft.com', fund='apps', api_key='11111111-1111-1111-1111-111111111111')
+    cc = QueueClient(host='circle.p9ft.com', instance='apps', api_key='11111111-1111-1111-1111-111111111111')
 
     response = cc.run_json('areski', 'load_positions', payload = payload)
     print(response)
